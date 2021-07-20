@@ -18,6 +18,7 @@ library(multcomp)
 library(ggplot2)
 library(cowplot)
 
+
 library(dunn.test)
 library(rcompanion)
 library(MAGNAMWAR)
@@ -67,6 +68,8 @@ pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
 
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2), data=pd2, family = "binomial")
+cat("Statistics summary")
+summary(abc)
 abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
@@ -125,6 +128,8 @@ pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
 
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2), data=pd2, family = "binomial")
+cat("Statistics summary")
+summary(abc)
 abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
@@ -187,7 +192,6 @@ pd2$trt <- as.factor(as.character(pd2$trt))
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2), data=pd2, family = "binomial")
 cat("Statistics summary")
 summary(abc)
-
 abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
@@ -212,18 +216,16 @@ p50g100y
 #ggsave(h=2,w=3.5,"50G100Y.png")
 
 ```
+cat("Statistics summary")
+summary(abc)
 
 ### 25g100y
 ```{r fig125g100y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%2025g100y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
 abb <- read_xls(tf, sheet = "Date")
 aab <- read_xls(tf, sheet = "Date")
-
-aaa <- read_xls('DataInExcelFormat 25g100y +Date.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 25g100y +Date.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 25g100y +Date.xls', sheet = "Date")
 ccc <- aaa
 
 out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
@@ -244,19 +246,17 @@ pref_data <- out_df %>%
 	droplevels()
 
 pd2 <- pref_data
-write.table(pd2, "figure1_rawdata.csv", append = T)
-
 
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
 
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2), data=pd2, family = "binomial")
+cat("Statistics summary")
+summary(abc)
 abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
 colors2 <- c("gray","red","blue")
-
-table(list(pd3e$abc2.x))
 
 pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("aceto 100g_aceto 25g" = "At","axenic 100g_axenic 25g" = "Ax","lacto 100g_lacto 25g" = "Lb"))
 pd3e$abc2.x <- factor(pd3e$abc2.x, levels = c("Ax","At","Lb"))
@@ -268,32 +268,21 @@ p25g100y <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(l
 	scale_fill_manual(name="Legend",values=colors2) +
 	scale_y_continuous(limits = c(0,1))+
 	theme_cowplot() + 
-#	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") +
 	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text = element_blank(), legend.position = "none", axis.ticks = element_blank(), axis.line = element_line(size = 0.2)) +
 	geom_errorbar(col = "black", ymax =pd3e$mean+pd3e$sem, ymin = pd3e$mean-pd3e$sem, width=0.25, size=.25) +
-#	labs(x="treatment",y = "Preference index") + 
-#  annotate(geom="text", x= 1, y= 0.0, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) +
-#  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
 	geom_hline(yintercept = 0.5, linetype="dashed") +
  	geom_text(aes(label=c("a","a","b"), y=.85), size=plot_text_size) + coord_flip()
-
-ggsave(h=2,w=3.5,"25G100Y.png")
-
-
-abc2
+p25g100y
+#ggsave(h=2,w=3.5,"25G100Y.png")
 ```
 
 ### 75g100y
 ```{r fig175g100y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%2075g100y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
 abb <- read_xls(tf, sheet = "Date")
 aab <- read_xls(tf, sheet = "Date")
-
-aaa <- read_xls('DataInExcelFormat 75g100y +Date.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 75g100y +Date.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 75g100y +Date.xls', sheet = "Date")
 ccc <- aaa
 
 out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
@@ -314,19 +303,17 @@ pref_data <- out_df %>%
 	droplevels()
 
 pd2 <- pref_data
-write.table(pd2, "figure1_rawdata.csv", append = T)
-
 
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
 
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2), data=pd2, family = "binomial")
+cat("Statistics summary")
+summary(abc)
 abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
 colors2 <- c("gray","red","blue")
-
-table(list(pd3e$abc2.x))
 
 pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("aceto 100g_aceto 100" = "At","axenic 100g_axenic 100" = "Ax","lacto 100g_lacto 100" = "Lb"))
 pd3e$abc2.x <- factor(pd3e$abc2.x, levels = c("Ax","At","Lb"))
@@ -338,31 +325,22 @@ p100y75g <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(l
 	scale_fill_manual(name="Legend",values=colors2) +
 	scale_y_continuous(limits = c(0,1))+
 	theme_cowplot() + 
-#	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") +
 	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text = element_blank(), legend.position = "none", axis.ticks = element_blank(), axis.line = element_line(size = 0.2)) +
 	geom_errorbar(col = "black", ymax =pd3e$mean+pd3e$sem, ymin = pd3e$mean-pd3e$sem, width=0.25, size=.25) +
-#	labs(x="treatment",y = "Preference index") + 
-#  annotate(geom="text", x= 1, y= 0.0, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) +
-#  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
 	geom_hline(yintercept = 0.5, linetype="dashed") +
  	geom_text(aes(label=c("b","a","b"), y=.75), size=plot_text_size) + coord_flip()
+p100y75g
 
-ggsave(h=2,w=3.5,"100y75g.png")
-abc2
-
+#ggsave(h=2,w=3.5,"100y75g.png")
 ```
 
 ### 100g50y
 ```{r fig1100g50y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g50y%20+Data.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
 abb <- read_xls(tf, sheet = "Date")
 aab <- read_xls(tf, sheet = "Date")
-
-aaa <- read_xls('DataInExcelFormat 100g50y +Data.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 100g50y +Data.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 100g50y +Data.xls', sheet = "Date")
 ccc <- aaa
 
 out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
@@ -383,19 +361,17 @@ pref_data <- out_df %>%
 	droplevels()
 
 pd2 <- pref_data
-write.table(pd2, "figure1_rawdata.csv", append = T)
-
 
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
 
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2), data=pd2, family = "binomial")
+cat("Statistics summary")
+summary(abc)
 abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
 colors2 <- c("gray","red","blue")
-
-table(list(pd3e$abc2.x))
 
 pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("aceto control_aceto trial" = "At","axenic control_axenic trial" = "Ax","lacto control_lacto trial" = "Lb"))
 
@@ -408,30 +384,22 @@ p100g50y <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(l
 	scale_fill_manual(name="Legend",values=colors2) +
 	scale_y_continuous(limits = c(0,1))+
 	theme_cowplot() + 
-#	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") +
 	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text = element_blank(), legend.position = "none", axis.ticks = element_blank(), axis.line = element_line(size = 0.2)) +
 	geom_errorbar(col = "black", ymax =pd3e$mean+pd3e$sem, ymin = pd3e$mean-pd3e$sem, width=0.25, size=.25) +
-#	labs(x="treatment",y = "Preference index") + 
-#  annotate(geom="text", x= 1, y= 0.0, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) +
-#  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
 	geom_hline(yintercept = 0.5, linetype="dashed") +
  	geom_text(aes(label=c("b","a","c"), y=.75), size=plot_text_size) + coord_flip()
 
-ggsave(h=2,w=3.5,"100G50Y.png")
-abc2
+p100g50y
+#ggsave(h=2,w=3.5,"100G50Y.png")
 ```
 
 ### 100g25y
 ```{r fig1100g25y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g25y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
 abb <- read_xls(tf, sheet = "Date")
 aab <- read_xls(tf, sheet = "Date")
-
-aaa <- read_xls('DataInExcelFormat 100g25y +Date.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 100g25y +Date.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 100g25y +Date.xls', sheet = "Date")
 ccc <- aaa
 
 out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
@@ -452,18 +420,17 @@ pref_data <- out_df %>%
 	droplevels()
 
 pd2 <- pref_data
-write.table(pd2, "figure1_rawdata.csv", append = T)
 
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
 
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2), data=pd2, family = "binomial")
+cat("Statistics summary")
+summary(abc)
 abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
 colors2 <- c("gray","red","blue")
-
-table(list(pd3e$abc2.x))
 
 pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("aceto yeast100_aceto yeast25" = "At","axenic yeast100_axenic yeast25" = "Ax","lacto yeast100_lacto yeast25" = "Lb"))
 
@@ -476,31 +443,23 @@ p100g25y <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(l
 	scale_fill_manual(name="Legend",values=colors2) +
 	scale_y_continuous(limits = c(0,1))+
 	theme_cowplot() + 
-#	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") +
 	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text = element_blank(), legend.position = "none", axis.ticks = element_blank(), axis.line = element_line(size = 0.2)) +
 	geom_errorbar(col = "black", ymax =pd3e$mean+pd3e$sem, ymin = pd3e$mean-pd3e$sem, width=0.25, size=.25) +
-#	labs(x="treatment",y = "Preference index") + 
-#  annotate(geom="text", x= 1, y= 0.0, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) +
-#  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
 	geom_hline(yintercept = 0.5, linetype="dashed") +
  	geom_text(aes(label=c("a","b","c"), y=.75), size=plot_text_size) + coord_flip()
 
-ggsave(h=2,w=3.5,"100G25Y.png")
+p100g25y
+#ggsave(h=2,w=3.5,"100G25Y.png")
 
-abc2
 ```
 
 ### 50g50y
 ```{r fig150g50y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g100y%20vs%2050g50y%20+Date_JMC.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
 abb <- read_xls(tf, sheet = "Date")
 aab <- read_xls(tf, sheet = "Date")
-
-aaa <- read_xls('DataInExcelFormat 100g100y vs 50g50y +Date_JMC.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 100g100y vs 50g50y +Date_JMC.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 100g100y vs 50g50y +Date_JMC.xls', sheet = "Date")
 ccc <- aaa
 
 out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
@@ -521,20 +480,18 @@ pref_data <- out_df %>%
 	droplevels()
 
 pd2 <- pref_data
-write.table(pd2, "figure1_rawdata.csv", append = T)
 
-table(pd2$trt)
-table(pd2$day)
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
 
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2), data=pd2, family = "binomial")
+cat("Statistics summary")
+summary(abc)
 abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
 colors2 <- c("gray","red","blue")
 
-table(list(pd3e$abc2.x))
 pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("aceto ratio100_aceto ratio50" = "At","axenic ratio100_axenic ratio50" = "Ax","lacto ratio100_lacto ratio50" = "Lb"))
 pd3e$abc2.x <- factor(pd3e$abc2.x, levels = c("Ax","At","Lb"))
 
@@ -554,24 +511,17 @@ p50g50y <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(li
 	geom_hline(yintercept = 0.5, linetype="dashed") +
  	geom_text(aes(label=c("b","a","a"), y=.75), size=plot_text_size) + coord_flip()
 
-ggsave(h=2,w=3.5,"50G50Y.png")
-
-abc2
-## in file 100 on left means that pref f
-
+p50g50y
+#ggsave(h=2,w=3.5,"50G50Y.png")
 ```
 
 ### 50g25y
 ```{r fig150g25y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100.100%20to%2050.25+Date_JMC.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
 abb <- read_xls(tf, sheet = "Date")
 aab <- read_xls(tf, sheet = "Date")
-
-aaa <- read_xls('DataInExcelFormat 100.100 to 50.25+Date_JMC.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 100.100 to 50.25+Date_JMC.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 100.100 to 50.25+Date_JMC.xls', sheet = "Date")
 ccc <- aaa
 
 out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
@@ -592,18 +542,17 @@ pref_data <- out_df %>%
 	droplevels()
 
 pd2 <- pref_data
-write.table(pd2, "figure1_rawdata.csv", append = T)
-
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
 
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2), data=pd2, family = "binomial")
+cat("Statistics summary")
+summary(abc)
 abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
 colors2 <- c("gray","red","blue")
 
-table(list(pd3e$abc2.x))
 pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("aceto 100to100_aceto 50to25" = "At","axenic 100to100_axenic 50to25" = "Ax","lacto 100to100_lacto 50to25" = "Lb"))
 pd3e$abc2.x <- factor(pd3e$abc2.x, levels = c("Ax","At","Lb"))
 
@@ -614,22 +563,18 @@ p50g25y <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(li
 	scale_fill_manual(name="Legend",values=colors2) +
 	scale_y_continuous(limits = c(0,1))+
 	theme_cowplot() + 
-#	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") +
 	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text = element_blank(), legend.position = "none", axis.ticks = element_blank(), axis.line = element_line(size = 0.2)) +
 	geom_errorbar(col = "black", ymax =pd3e$mean+pd3e$sem, ymin = pd3e$mean-pd3e$sem, width=0.25, size=.25) +
-#	labs(x="treatment",y = "Preference index") + 
-#  annotate(geom="text", x= 1, y= 0.0, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) +
-#  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
 	geom_hline(yintercept = 0.5, linetype="dashed") +
  	geom_text(aes(label=c("a","b","c"), y=.75), size=plot_text_size) + coord_flip()
 
-ggsave(h=2,w=3.5,"50G25Y.png")
+p50g25y
+#ggsave(h=2,w=3.5,"50G25Y.png")
 
-abc2
 ```
 
 ### Build the plot
-```{r fig1plot, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+```{r fig1plot, exercise=F, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 pyaxis <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(list(abc2.x))))), yend=mean, col = abc2.x)) + 
   geom_blank() + 
@@ -688,250 +633,20 @@ dev.off()
 
 ```
 
-
-### 100g50y
-```{r 100g50y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
-
-aaa <- read_xls(tf, sheet = "NumberOfSips")
-abb <- read_xls(tf, sheet = "Date")
-aab <- read_xls(tf, sheet = "Date")
-
-aaa <- read_xls('DataInExcelFormat 100g50y +Data.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 100g50y +Data.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 100g50y +Data.xls', sheet = "Date")
-ccc <- aaa
-
-out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
-j=3
-for(i in 1:j) {
-	lacto_pref <- (ccc[,i]/(ccc[,(j+i)]+ccc[,i]))
-	lp2 <- cbind(lacto_pref,abb[,(i)], aab[,i],aaa[,i],aaa[,(j+i)])
-	lp3 <- lp2[(!is.na(lp2[,1]) & lp2[,1]!=-1),]
-	lp4 <- data.frame(lp3) %>% mutate(trt=paste0(colnames(ccc[i]),"_",colnames(ccc[i+j])), pref=lp3[,1], day=lp3[,2], time=lp3[,3],dieta=lp3[,4],dietb=lp3[,5]) %>% dplyr::select(trt,pref,day,dieta,dietb)
-	out_df <- rbind(out_df,lp4)
-}
-
-pref_data <- out_df %>% 
-	mutate(trt=gsub(pattern = " 10Y10G", replacement = "",x = trt,perl = T)) %>% 
-	mutate(trt=gsub(pattern = " 10Y7.5G", replacement = "",x = trt,perl = T)) %>%
-	mutate(trt=factor(trt)) %>%
-	filter(dieta<1000 & dietb<1000) %>%
-	droplevels()
-
-pd100g50y <- pref_data
-
-aaa <- read_xls('DataInExcelFormat 100g100y vs 50g50y +Date_JMC.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 100g100y vs 50g50y +Date_JMC.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 100g100y vs 50g50y +Date_JMC.xls', sheet = "Date")
-ccc <- aaa
-
-out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
-j=3
-for(i in 1:j) {
-	lacto_pref <- (ccc[,i]/(ccc[,(j+i)]+ccc[,i]))
-	lp2 <- cbind(lacto_pref,abb[,(i)], aab[,i],aaa[,i],aaa[,(j+i)])
-	lp3 <- lp2[(!is.na(lp2[,1]) & lp2[,1]!=-1),]
-	lp4 <- data.frame(lp3) %>% mutate(trt=paste0(colnames(ccc[i]),"_",colnames(ccc[i+j])), pref=lp3[,1], day=lp3[,2], time=lp3[,3],dieta=lp3[,4],dietb=lp3[,5]) %>% dplyr::select(trt,pref,day,dieta,dietb)
-	out_df <- rbind(out_df,lp4)
-}
-
-pref_data <- out_df %>% 
-	mutate(trt=gsub(pattern = " 10Y10G", replacement = "",x = trt,perl = T)) %>% 
-	mutate(trt=gsub(pattern = " 10Y7.5G", replacement = "",x = trt,perl = T)) %>%
-	mutate(trt=factor(trt)) %>%
-	filter(dieta<1000 & dietb<1000) %>%
-	droplevels()
-
-pd50g50y <- pref_data
-
-
-aaa <- read_xls('DataInExcelFormat 100.100 to 50.25+Date_JMC.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 100.100 to 50.25+Date_JMC.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 100.100 to 50.25+Date_JMC.xls', sheet = "Date")
-ccc <- aaa
-
-out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
-j=3
-for(i in 1:j) {
-	lacto_pref <- (ccc[,i]/(ccc[,(j+i)]+ccc[,i]))
-	lp2 <- cbind(lacto_pref,abb[,(i)], aab[,i],aaa[,i],aaa[,(j+i)])
-	lp3 <- lp2[(!is.na(lp2[,1]) & lp2[,1]!=-1),]
-	lp4 <- data.frame(lp3) %>% mutate(trt=paste0(colnames(ccc[i]),"_",colnames(ccc[i+j])), pref=lp3[,1], day=lp3[,2], time=lp3[,3],dieta=lp3[,4],dietb=lp3[,5]) %>% dplyr::select(trt,pref,day,dieta,dietb)
-	out_df <- rbind(out_df,lp4)
-}
-
-pref_data <- out_df %>% 
-	mutate(trt=gsub(pattern = " 10Y10G", replacement = "",x = trt,perl = T)) %>% 
-	mutate(trt=gsub(pattern = " 10Y7.5G", replacement = "",x = trt,perl = T)) %>%
-	mutate(trt=factor(trt)) %>%
-	filter(dieta<1000 & dietb<1000) %>%
-	droplevels()
-
-pd50g25y <- pref_data
-
-
-strsplit(x = all_data$trt[1], split = " ",fixed = T)
-str(all_data)
-all_data <- rbind(pd100g50y %>% mutate(diet = "100g50y"),pd50g25y%>% mutate(diet = "50g25y"),pd50g50y%>% mutate(diet = "g50y")) %>%
-  rowwise() %>%
-  mutate(bactype = strsplit(x = as.character(trt), split = " ",fixed = T)[[1]][1]) 
-all_data
-
-
-  ## aceto
-pd2 <- all_data %>% 
-  filter(bactype == "aceto")
-pd2$day2 <- as.factor(as.character(pd2$day))
-pd2$trt <- as.factor(as.character(pd2$trt))
-
-abc <- glmer(cbind(dieta,dietb) ~ diet + (1|day2), data=pd2, family = "binomial")
-abc1 <- glht(abc, mcp(diet='Tukey'))
-summary(abc1)
-abc2 <- cld(abc1)
-plot(abc2)
-pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
-colors2 <- c("red","red","red")
-
-table(list(pd3e$abc2.x))
-
-pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("100g50y" = "100g50y","50g25y" = "50g25y","g50y" = "50g50y"))
-
-pd3e$abc2.x <- factor(pd3e$abc2.x, levels = c("100g50y","50g25y","50g50y"))
-
-plot_text_size = 3
-pActriple <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(list(abc2.x))))), yend=mean, col = abc2.x)) + 
-	geom_segment(stat="identity",size=plot_text_size*1.75) + 
-  scale_color_manual(values = colors2) +
-	scale_fill_manual(name="Legend",values=colors2) +
-	scale_y_continuous(limits = c(0,1))+
-	theme_cowplot() + 
-#	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") +
-	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text = element_blank(), legend.position = "none", axis.ticks = element_blank(), axis.line = element_line(size = 0.2)) +
-	geom_errorbar(col = "black", ymax =pd3e$mean+pd3e$sem, ymin = pd3e$mean-pd3e$sem, width=0.25, size=.25) +
-#	labs(x="treatment",y = "Preference index") + 
-#  annotate(geom="text", x= 1, y= 0.0, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) +
-#  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
-	geom_hline(yintercept = 0.5, linetype="dashed") +
- 	geom_text(aes(label=c("a","a","a"), y=.75), size=plot_text_size) + coord_flip()
-
-pActriple
-ggsave(h=2,w=3.5,"Ac_triple.png")
-abc2
-
-  ## lacto
-pd2 <- all_data %>% 
-  filter(bactype == "lacto")
-pd2$day2 <- as.factor(as.character(pd2$day))
-pd2$trt <- as.factor(as.character(pd2$trt))
-
-abc <- glmer(cbind(dieta,dietb) ~ diet + (1|day2), data=pd2, family = "binomial")
-abc1 <- glht(abc, mcp(diet='Tukey'))
-abc2 <- cld(abc1)
-plot(abc2)
-pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
-colors2 <- c("red","red","red")
-
-table(list(pd3e$abc2.x))
-
-pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("100g50y" = "100g50y","50g25y" = "50g25y","g50y" = "50g50y"))
-
-pd3e$abc2.x <- factor(pd3e$abc2.x, levels = c("100g50y","50g25y","50g50y"))
-
-plot_text_size = 3
-pLbtriple <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(list(abc2.x))))), yend=mean, col = abc2.x)) + 
-	geom_segment(stat="identity",size=plot_text_size*1.75) + 
-  scale_color_manual(values = colors2) +
-	scale_fill_manual(name="Legend",values=colors2) +
-	scale_y_continuous(limits = c(0,1))+
-	theme_cowplot() + 
-#	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") +
-	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text = element_blank(), legend.position = "none", axis.ticks = element_blank(), axis.line = element_line(size = 0.2)) +
-	geom_errorbar(col = "black", ymax =pd3e$mean+pd3e$sem, ymin = pd3e$mean-pd3e$sem, width=0.25, size=.25) +
-#	labs(x="treatment",y = "Preference index") + 
-#  annotate(geom="text", x= 1, y= 0.0, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) +
-#  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
-	geom_hline(yintercept = 0.5, linetype="dashed") +
- 	geom_text(aes(label=c("a","a","a"), y=.75), size=plot_text_size) + coord_flip()
-
-pLbtriple
-ggsave(h=2,w=3.5,"Lb_triple.png")
-abc2
-
-
-  ## axenic
-pd2 <- all_data %>% 
-  filter(bactype == "axenic")
-pd2$day2 <- as.factor(as.character(pd2$day))
-pd2$trt <- as.factor(as.character(pd2$trt))
-
-abc <- glmer(cbind(dieta,dietb) ~ diet + (1|day2), data=pd2, family = "binomial")
-abc1 <- glht(abc, mcp(diet='Tukey'))
-abc2 <- cld(abc1)
-plot(abc2)
-pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
-colors2 <- c("red","red","red")
-
-table(list(pd3e$abc2.x))
-
-pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("100g50y" = "100g50y","50g25y" = "50g25y","g50y" = "50g50y"))
-
-pd3e$abc2.x <- factor(pd3e$abc2.x, levels = c("100g50y","50g25y","50g50y"))
-
-plot_text_size = 3
-pAxtriple <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(list(abc2.x))))), yend=mean, col = abc2.x)) + 
-	geom_segment(stat="identity",size=plot_text_size*1.75) + 
-  scale_color_manual(values = colors2) +
-	scale_fill_manual(name="Legend",values=colors2) +
-	scale_y_continuous(limits = c(0,1))+
-	theme_cowplot() + 
-#	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") +
-	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text = element_blank(), legend.position = "none", axis.ticks = element_blank(), axis.line = element_line(size = 0.2)) +
-	geom_errorbar(col = "black", ymax =pd3e$mean+pd3e$sem, ymin = pd3e$mean-pd3e$sem, width=0.25, size=.25) +
-#	labs(x="treatment",y = "Preference index") + 
-#  annotate(geom="text", x= 1, y= 0.0, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) +
-#  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
-	geom_hline(yintercept = 0.5, linetype="dashed") +
- 	geom_text(aes(label=c("a","a","a"), y=.75), size=plot_text_size) + coord_flip()
-
-pAxtriple
-ggsave(h=2,w=3.5,"Ax_triple.png")
-abc2
-
-## so, no differences; but it's wrong to compare these since they weren't done in the same experiment, so i'm not sure this comparison is right and am going to leave the text as it is. 
-```
-
-
 ## Figure 2
-
-### Getting started
-```{r gettingstarted2, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-
-rm(list=ls())
-library(readxl)
-library(dplyr)
-library(dunn.test)
-library(rcompanion)
-library(MAGNAMWAR)
-library(lme4)
-library(multcomp)
-library(ggplot2)
-library(cowplot)
-setwd('~/Dropbox/Dietary Pref 2019/MGWA')
-
-```
-
 ### Figure 2
-```{r Fig2, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-## 7.5g10y v 10g10y
-aaa <- read_xls('DataInExcelFormat.xls', sheet = "NumberOfSips")
-# bbb <- read_xls('DataInExcelFormat.xls', sheet = "SipDurations")
-abb <- read_xls('DataInExcelFormat-ByDay.xls', sheet = "Per Day")
-aab <- read_xls('DataInExcelFormat-ByDay-ByTime.xls', sheet = "By Time")
-#ccc <- aaa*bbb
+```{r Fig2, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 1000000,fig.height=8, fig.width=3.5}
+
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat-ByDay.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+abb <- read_xls(tf, sheet = "Per Day")
+
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat-ByDay-ByTime.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+aab <- read_xls(tf, sheet = "By Time")
 ccc <- aaa
 
-dim(ccc)
 out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
 i=1
 for(i in 1:41) {
@@ -952,18 +667,18 @@ pref_data <- out_df %>%
 	filter(!trt%in%c("axenic_axenic","67_67","25_25","48_48","32_32")) %>% 
 	droplevels()
 
-pd2 <- read.csv("lookup_code.csv") %>% inner_join(pref_data, by=c("trt")) %>% filter(!is.na(time)) %>% droplevels()
+pd2 <- read.csv(url("https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/lookup_code.csv")) %>% inner_join(pref_data, by=c("trt")) %>% filter(!is.na(time)) %>% droplevels()
 
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$time2 <- as.factor(as.character(pd2$time))
 pd2$code <- as.factor(as.character(pd2$code))
 pd2$td <- paste0(pd2$time,pd2$day)
 
-
-write.csv(pd2, "fig2data.csv")
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2) + (1|time2), data=pd2, family="binomial")
+cat("Statistics summary")
+summary(abc)
 def <- summary(abc)
-  # Runs the stats, pounded out to prevent time
+  # Runs the stats, pounded out to prevent timeout
 # abc1 <- glht(abc, mcp(trt='Tukey'))
 # abc2 <- cld(abc1)
 # efg <- data.frame(cbind(abc2$lp, abc2$x,abc2$xname ))
@@ -972,37 +687,32 @@ def <- summary(abc)
 #letters_orderA <- data.frame(abc2$mcletters$Letters) %>% tibble::rownames_to_column('name')
 #write.csv(letters_orderA, "letters_orderA.csv")
 
-efg <- read.csv('fig2-efg.csv')
+efg <- read.csv(url('https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/fig2-efg.csv'))
 fgh <- efg %>% group_by(X2) %>% dplyr::summarize(mean = mean(X1), sem = sd(X1)/sqrt(sum(X1>-1)))
-pd3e <- read.csv('fig2-pd3e.csv')
-letters_orderA <- read.csv("letters_orderA.csv")
+pd3e <- read.csv(url('https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/fig2-pd3e.csv'))
+letters_orderA <- read.csv(url("https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/letters_orderA.csv"))
 
 colors2 <- c("gray")
 
 pd3e$abc2.x <- factor(pd3e$abc2.x, levels = c("1_1","11cb6_11cb6","11cb7_11cb7","11ct2_11ct2","13_13","137_137","15_15","16_16","181_181","196_196","1ab7_1ab7","28_28","29_29","3_3","30_30","31_31","34_34","35_35","39_39","4_4","43_43","45_45","5_5","52_52","56_56","6_6","66_66","69_69","70_70","73_73","75_75","98_98"))
 
-efg$abc2.x <- factor(efg$abc2.x, levels = c("1_1","11cb6_11cb6","11cb7_11cb7","11ct2_11ct2","13_13","137_137","15_15","16_16","181_181","196_196","1ab7_1ab7","28_28","29_29","3_3","30_30","31_31","34_34","35_35","39_39","4_4","43_43","45_45","5_5","52_52","56_56","6_6","66_66","69_69","70_70","73_73","75_75","98_98"))
-
-efg2 <- efg %>% mutate(X2 = as.character(X2)) %>% full_join(read.csv("lookup_code.csv"), by = c("X2" = "singlecode"))
-
-class(efg$X2)
-
+efg2 <- efg %>% mutate(X2 = as.character(X2)) %>% full_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/lookup_code.csv")), by = c("X2" = "singlecode"))
 
 pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("1_1" = "lbrc",
                                             "11cb6_11cb6" = "wp07",
                                             "11cb7_11cb7" = "wp13",
                                             "11ct2_11ct2"="asl5",
-                                            "13_13"="bsub", ## sig
-                                            "137_137" = "lc37", ## sig
-                                            "15_15" = "ecok", ## sig
-                                            "16_16" = "pput", ## sig
-                                            "181_181" = "lpar", ##sig
+                                            "13_13"="bsub", 
+                                            "137_137" = "lc37", 
+                                            "15_15" = "ecok", 
+                                            "16_16" = "pput", 
+                                            "181_181" = "lpar", 
                                             "196_196" = "llcs",
-                                            "1ab7_1ab7" = "wp18", ## sig
+                                            "1ab7_1ab7" = "wp18", 
                                             "28_28" = "atrn",
-                                            "29_29" = "gfra", ## sig
+                                            "29_29" = "gfra", 
                                             "3_3" = "lfrc",
-                                            "30_30" = "apan", ## sig
+                                            "30_30" = "apan", 
                                             "31_31" = "kmed",
                                             "34_34" = "apnb",
                                             "35_35" = "aace",
@@ -1020,76 +730,69 @@ pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("1_1" = "lbrc",
                                             "73_73" = "lbuc",
                                             "75_75" = "lplw",
                                             "98_98" = "lsui")
-                             )## sig
+                             )
                              
-
 pd3e$abc2.x <- factor(pd3e$abc2.x, levels = rev(c("atrn","atrc","amac","aori","aci5","aace","apan","apa3","asl5","apnb","apoc","gfra","galb","kmed","cint","ecok","pput","lmli","lplw","lpar","lbrc","lbuc","lfrk","lfrc","llcs","wp07","wp13","wp18","lfal","lsui","lc37","bsub")))
 
 pd3e <- pd3e %>% arrange(abc2.x)
-
 
 letters_orderA$name2 <- plyr::revalue(letters_orderA$name, c("1_1" = "lbrc",
                                                              "11cb6_11cb6" = "wp07", 
                                                              "11cb7_11cb7" = "wp13",
                                                              "11ct2_11ct2"="asl5", 
-                                            "13_13"="bsub", ## sig
-                                            "137_137" = "lc37", ## sig
-                                            "15_15" = "ecok", ## sig
-                                            "16_16" = "pput", ## sig
-                                            "181_181" = "lpar", ##sig
-                                            "196_196" = "llcs",
-                                            "1ab7_1ab7" = "wp18", ## sig
-                                            "28_28" = "atrn",
-                                            "29_29" = "gfra", ## sig
-                                            "3_3" = "lfrc",
-                                            "30_30" = "apan", ## sig
-                                            "31_31" = "kmed",
-                                            "34_34" = "apnb",
-                                            "35_35" = "aace",
-                                            "39_39" = "apa3",
-                                            "4_4" = "apoc",
-                                            "43_43" = "aci5",
-                                            "45_45" = "aori",
-                                            "5_5" = "atrc",
-                                            "52_52" = "cint",
-                                            "56_56" = "galb",
-                                            "6_6" = "amac",
-                                            "66_66" = "lmli",
-                                            "69_69" = "lfal",
-                                            "70_70" = "lfrk",
-                                            "73_73" = "lbuc",
-                                            "75_75" = "lplw",
-                                            "98_98" = "lsui")
-                             )## sig
+                                                             "13_13"="bsub", 
+                                                             "137_137" = "lc37", 
+                                                             "15_15" = "ecok", 
+                                                             "16_16" = "pput", 
+                                                             "181_181" = "lpar", 
+                                                             "196_196" = "llcs",
+                                                             "1ab7_1ab7" = "wp18", 
+                                                             "28_28" = "atrn",
+                                                             "29_29" = "gfra", 
+                                                             "3_3" = "lfrc",
+                                                             "30_30" = "apan", 
+                                                             "31_31" = "kmed",
+                                                             "34_34" = "apnb",
+                                                             "35_35" = "aace",
+                                                             "39_39" = "apa3",
+                                                             "4_4" = "apoc",
+                                                             "43_43" = "aci5",
+                                                             "45_45" = "aori",
+                                                             "5_5" = "atrc",
+                                                             "52_52" = "cint",
+                                                             "56_56" = "galb",
+                                                             "6_6" = "amac",
+                                                             "66_66" = "lmli",
+                                                             "69_69" = "lfal",
+                                                             "70_70" = "lfrk",
+                                                             "73_73" = "lbuc",
+                                                             "75_75" = "lplw",
+                                                             "98_98" = "lsui"
+                                                             )
+                                      )
 letters_orderA$name2 <- factor(letters_orderA$name2, levels = rev(c("atrn","atrc","amac","aori","aci5","aace","apan","apa3","asl5","apnb","apoc","gfra","galb","kmed","cint","ecok","pput","lmli","lplw","lpar","lbrc","lbuc","lfrk","lfrc","llcs","wp07","wp13","wp18","lfal","lsui","lc37","bsub")))
 
 letters_order <- letters_orderA %>% arrange(name2) %>% dplyr::select(abc2.mcletters.Letters) %>% unlist() %>% unname()
-letters_order
 
 colors2 <- rev(c(rep("red",11),rep("orange",4),rep("green",2),rep("blue", 7),rep("purple",7),rep("purple4",1)))
 
 	ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(list(droplevels(pd3e$abc2.x)))))), yend=mean)) + 
 		geom_segment(stat="identity",size=12, col=colors2) + 
-#		geom_signif(comparisons=list(c("0%","0.34%")), map_signif_level=T, y_position = .625, annotation = c("*"), textsize = 20, size = 2) +
 		scale_fill_manual(name="Legend",values=colors2) +
- #   scale_x_discrete(labels=c("Nothing all","LAB all","Nothing","AAB","Acid","HK")) +
 		scale_y_continuous(limits = c(0,1))+
 		theme_cowplot() + 
 		theme(text = element_text(size=32), axis.text = element_text(size=32), axis.text.x = element_text(angle = 45, hjust=1), axis.text.y = element_text(hjust=0)) +
 		geom_errorbar(aes(ymax =mean+sem, ymin = mean-sem), width=0.25, size=2) +
 		labs(x="",y = "Preference index") + 
-#		scale_x_discrete(labels=c("F37" = "FL","M89" = "ME")) +
-#	  geom_text(aes(x= 0, y= 0.02, label = "10f"), stat = "count",vjust = -.5) +
-#	  annotate(geom = "text",x = 0, y = 0.02, label = "10%Y 10%G", color="green1", size=12, hjust = 0, fill="white", label.size=0) +
 	  geom_text(x= 0, y= 0.02, label = "5%Y 10%G",color="green1", size=12, hjust = -.1, angle = 90) +
 	  geom_text(x= 0, y= 1, label = "10%Y 10%G",color="blue", size=12, hjust =-.1, angle = 90) + 
 		geom_hline(yintercept = 0.5, linetype="dashed") +
 	 	geom_text(aes(label=unlist(unname(letters_order)), y=.75), size=9) +
 	  coord_flip()
 
-ggsave(h=16,w=7,"MGWA_data.png")
+	#ggsave(h=16,w=7,"MGWA_data.png")
 
-write.csv(pd3e,"fig2pd3e.csv")
+
 ```
 
 ### Fig S1 QQ plotsa
