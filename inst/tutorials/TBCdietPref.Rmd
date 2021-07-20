@@ -17,12 +17,19 @@ library(lme4)
 library(multcomp)
 library(ggplot2)
 library(cowplot)
+library(MAGNAMWAR)
+library(KEGGREST)
 
 
 library(dunn.test)
 library(rcompanion)
-library(MAGNAMWAR)
 library(gridExtra)
+
+library(dunn.test)
+library(rcompanion)
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# BiocManager::install("KEGGREST")
 
 # GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 # 
@@ -635,7 +642,7 @@ dev.off()
 
 ## Figure 2
 ### Figure 2
-```{r Fig2, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 1000000,fig.height=8, fig.width=3.5}
+```{r Fig2, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 1000000,fig.height=10, fig.width=3.5}
 
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 aaa <- read_xls(tf, sheet = "NumberOfSips")
@@ -781,13 +788,13 @@ colors2 <- rev(c(rep("red",11),rep("orange",4),rep("green",2),rep("blue", 7),rep
 		scale_fill_manual(name="Legend",values=colors2) +
 		scale_y_continuous(limits = c(0,1))+
 		theme_cowplot() + 
-		theme(text = element_text(size=32), axis.text = element_text(size=32), axis.text.x = element_text(angle = 45, hjust=1), axis.text.y = element_text(hjust=0)) +
+		theme(axis.text.x = element_text(angle = 45, hjust=1), axis.text.y = element_text(hjust=0)) + # text = element_text(size=32), axis.text = element_text(size=32), 
 		geom_errorbar(aes(ymax =mean+sem, ymin = mean-sem), width=0.25, size=2) +
 		labs(x="",y = "Preference index") + 
-	  geom_text(x= 0, y= 0.02, label = "5%Y 10%G",color="green1", size=12, hjust = -.1, angle = 90) +
-	  geom_text(x= 0, y= 1, label = "10%Y 10%G",color="blue", size=12, hjust =-.1, angle = 90) + 
+	  geom_text(x= 0, y= 0.02, label = "5%Y 10%G",color="green1",  hjust = -.1, angle = 90) +# size = 12
+	  geom_text(x= 0, y= 1, label = "10%Y 10%G",color="blue", hjust =-.1, angle = 90) + #size = 12
 		geom_hline(yintercept = 0.5, linetype="dashed") +
-	 	geom_text(aes(label=unlist(unname(letters_order)), y=.75), size=9) +
+	 	geom_text(aes(label=unlist(unname(letters_order)), y=.75)) + # , size=9
 	  coord_flip()
 
 	#ggsave(h=16,w=7,"MGWA_data.png")
@@ -795,23 +802,22 @@ colors2 <- rev(c(rep("red",11),rep("orange",4),rep("green",2),rep("blue", 7),rep
 
 ```
 
-### Fig S1 QQ plotsa
+### Fig S1 QQ plotsa DOES NOT RUN
 ```{r mgwa, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-parsed_data <- FormatAfterOrtho('groupsWP.txt', format="groups")
+parsed_data <- FormatAfterOrtho(url('https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/groups2020.txt'), format="groups")
 
-pd2 <- read.csv("lookup_code.csv") %>% inner_join(pref_data, by=c("trt")) %>% filter(!is.na(time)) %>% droplevels()
+pd2 <- read.csv(url("https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/lookup_code.csv")) %>% inner_join(pref_data, by=c("trt")) %>% filter(!is.na(time)) %>% droplevels()
 
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$time2 <- as.factor(as.character(pd2$time))
 pd2$code <- as.factor(as.character(pd2$code))
 pd2$td <- paste0(pd2$time,pd2$day)
-sum(c(pd2$dieta,pd2$dietb))
 
-efg <- read.csv('fig2-efg.csv')
+efg <- read.csv(url('https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/fig2-efg.csv'))
 
 pd3 <- cbind(pd2, efg) %>% mutate(testcol = paste0(trt, X2,code))
-
-write.csv(pd3, "raw_for_MGWA.csv")
+pd3[1,]
+#write.csv(pd3, "raw_for_MGWA.csv")
 
 # write out using cbind data
 mcl_matrixB <- AnalyzeOrthoMCL(mcl_data = parsed_data, 
@@ -819,37 +825,23 @@ mcl_matrixB <- AnalyzeOrthoMCL(mcl_data = parsed_data,
 						 model = 'wx',
 						 species_name = 'code',
 						 resp = 'X1',
-		#				 resp2 = 'X2',
-#						 rndm1='day2',
-#						 rndm2='time2',
 						 princ_coord = 0.5)
-
 
 QQPlotter(mcl_matrixB)
 #joined_matrixB <- JoinRepSeq(parsed_data, 'precompliantfasta2/', mcl_matrixB, fastaformat = 'old')
 #WriteMCL(joined_matrixB,"wilcox_binomialdata.csv")
 
-WriteMCL(mcl_matrixB,"wilcox_binomialdata_test.csv")
-
-
-pd3[1:10,]
 mcl_matrixC <- AnalyzeOrthoMCL(mcl_data = parsed_data, 
 						pheno_data = pd3,
 						 model = 'lmeR2ind',
 						 species_name = 'code',
 						 resp = 'X1',
-		#				 resp2 = 'X2',
 						 rndm1='day',
 						 rndm2='time',
 						 princ_coord = 0.5)
 QQPlotter(mcl_matrixC)
-WriteMCL(mcl_matrixC,"lmeR2ind_binomialdata_test.csv")
-
 #joined_matrixC <- JoinRepSeq(parsed_data, 'precompliantfasta2/', mcl_matrixC, fastaformat = 'old')
-#setwd('..')
 #WriteMCL(joined_matrixC,"lmeR2ind_binomialdata.csv")
-
-
 ```
 
 
