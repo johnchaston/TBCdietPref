@@ -4,32 +4,44 @@ output: learnr::tutorial
 runtime: shiny_prerendered
 ---
 
-# Figure 1
 
-```{r}
+```{r setup, include = F}
 rm(list=ls())
 
+library(learnr)
 library(readxl)
 library(dplyr)
-library(dunn.test)
-library(rcompanion)
-library(MAGNAMWAR)
+library(RCurl)
+library(httr)
 library(lme4)
 library(multcomp)
 library(ggplot2)
 library(cowplot)
+
+library(dunn.test)
+library(rcompanion)
+library(MAGNAMWAR)
 library(gridExtra)
 
-setwd('~/Dropbox/Dietary Pref 2019/')
+# GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+# 
+# aaa <- read_xls(tf, sheet = "NumberOfSips")
+# abb <- read_xls(tf, sheet = "Date")
+# aab <- read_xls(tf, sheet = "Date")
+
 
 ```
 
-## 100g100y
-```{r PLOTTED 10g10y v 10g10y}
+## Figure 1
 
-aaa <- read_xls('DataInExcelFormat 100.100 vs 100.00 +Date.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 100.100 vs 100.00 +Date.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 100.100 vs 100.00 +Date.xls', sheet = "Date")
+### plot 100g100y
+```{r fig1100g100y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+
+GET("http://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100.100%20vs%20100.00%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+abb <- read_xls(tf, sheet = "Date")
+aab <- read_xls(tf, sheet = "Date")
 ccc <- aaa
 
 out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
@@ -51,8 +63,6 @@ pref_data <- out_df %>%
 
 pd2 <- pref_data
 
-write.table(pd2, "figure1_rawdata.csv", append = F)
-
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
 
@@ -61,8 +71,6 @@ abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
 colors2 <- c("gray","red","blue")
-
-table(list(pd3e$abc2.x))
 
 pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("aceto 100g_aceto 100" = "At","axenic 100g_axenic 100" = "Ax","lacto 100g_lacto 100" = "Lb"))
 
@@ -75,25 +83,23 @@ p100g100y <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(
 	scale_fill_manual(name="Legend",values=colors2) +
 	scale_y_continuous(limits = c(0,1))+
 	theme_cowplot() + 
-#	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") +
 	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text = element_blank(), legend.position = "none", axis.ticks = element_blank(), axis.line = element_line(size = 0.2)) +
 	geom_errorbar(col = "black", ymax =pd3e$mean+pd3e$sem, ymin = pd3e$mean-pd3e$sem, width=0.25, size=.25) +
-#	labs(x="treatment",y = "Preference index") + 
-#  annotate(geom="text", x= 1, y= 0.0, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) +
-#  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
 	geom_hline(yintercept = 0.5, linetype="dashed") +
  	geom_text(aes(label=c("a","b","c"), y=.75), size=plot_text_size) + coord_flip()
-
-ggsave(h=2,w=3.5,"100G100Y.png")
+p100g100y
+#ggsave(h=2,w=3.5,"100G100Y.png")
 
 ```
 
-## 75y100g
-```{r PLOTTED 7.5y10g v 10g10y}
+### plot 75y100g
+```{r fig175y100g, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
-aaa <- read_xls('DataInExcelFormat 100g75y +Date.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 100g75y +Date.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 100g75y +Date.xls', sheet = "Date")
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+abb <- read_xls(tf, sheet = "Date")
+aab <- read_xls(tf, sheet = "Date")
 ccc <- aaa
 
 out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
@@ -114,8 +120,6 @@ pref_data <- out_df %>%
 	droplevels()
 
 pd2 <- pref_data
-write.table(pd2, "figure1_rawdata.csv", append = T)
-
 
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
@@ -125,8 +129,6 @@ abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
 colors2 <- c("gray","red","blue")
-
-table(list(pd3e$abc2.x))
 
 pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("aceto control_aceto trial" = "At","axenic control_axenic trial" = "ax","lacto control_lacto trial" = "Lp"))
 
@@ -147,17 +149,17 @@ p75y100g <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(l
 #  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
 	geom_hline(yintercept = 0.5, linetype="dashed") +
  	geom_text(aes(label=c("b","a","a"), y=.75), size=plot_text_size) + coord_flip()
-
-ggsave(h=2,w=3.5,"75y100g.png")
-abc2
+p75y100g
+#ggsave(h=2,w=3.5,"75y100g.png")
 ```
 
-## 50g100y
-```{r PLOTTED 5g10y v 10g10y}
+### 50g100y
+```{r fig150g100y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%2050g100y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
-aaa <- read_xls('DataInExcelFormat 50g100y +Date.xls', sheet = "NumberOfSips")
-abb <- read_xls('DataInExcelFormat 50g100y +Date.xls', sheet = "Date")
-aab <- read_xls('DataInExcelFormat 50g100y +Date.xls', sheet = "Date")
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+abb <- read_xls(tf, sheet = "Date")
+aab <- read_xls(tf, sheet = "Date")
 ccc <- aaa
 
 out_df <- data.frame(trt=character(), pref=numeric(),day=numeric(),time=numeric(),dieta=character(),dietb=character())
@@ -178,19 +180,19 @@ pref_data <- out_df %>%
 	droplevels()
 
 pd2 <- pref_data
-write.table(pd2, "figure1_rawdata.csv", append = T)
-
 
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$trt <- as.factor(as.character(pd2$trt))
 
 abc <- glmer(cbind(dieta,dietb) ~ trt + (1|day2), data=pd2, family = "binomial")
+cat("Statistics summary")
+summary(abc)
+
 abc1 <- glht(abc, mcp(trt='Tukey'))
 abc2 <- cld(abc1)
 pd3e <- data.frame(abc2$lp, abc2$x) %>% group_by(abc2.x) %>% dplyr::summarize(mean = mean(abc2.lp), sem=sd(abc2.lp)/sqrt(sum(abc2.lp<2)))
 colors2 <- c("gray","red","blue")
 
-table(list(pd3e$abc2.x))
 pd3e$abc2.x <- plyr::revalue(pd3e$abc2.x, c("aceto 100g_aceto 50g" = "At","axenic 100g_axenic 50g" = "Ax","lacto 100g_lacto 50g" = "Lb"))
 pd3e$abc2.x <- factor(pd3e$abc2.x, levels = c("Ax","At","Lb"))
 
@@ -201,22 +203,23 @@ p50g100y <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(l
 	scale_fill_manual(name="Legend",values=colors2) +
 	scale_y_continuous(limits = c(0,1))+
 	theme_cowplot() + 
-#	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") +
 	theme(text = element_text(size=plot_text_size), axis.title = element_blank(), axis.text = element_blank(), legend.position = "none", axis.ticks = element_blank(), axis.line = element_line(size = 0.2)) +
 	geom_errorbar(col = "black", ymax =pd3e$mean+pd3e$sem, ymin = pd3e$mean-pd3e$sem, width=0.25, size=.25) +
-#	labs(x="treatment",y = "Preference index") + 
-#  annotate(geom="text", x= 1, y= 0.0, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) +
-#  annotate(geom="text", x= 1, y= 1, label = "10%Y 10%G",color="black", size=4, hjust = 0, fill="white", label.size=0, angle = 90) + 
 	geom_hline(yintercept = 0.5, linetype="dashed") +
  	geom_text(aes(label=c("a","a","b"), y=.75), size=plot_text_size) + coord_flip()
 
-ggsave(h=2,w=3.5,"50G100Y.png")
-abc2
+p50g100y
+#ggsave(h=2,w=3.5,"50G100Y.png")
 
 ```
 
-## 25g100y
-```{r PLOTTED 2.5g10y v 10g10y}
+### 25g100y
+```{r fig125g100y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+abb <- read_xls(tf, sheet = "Date")
+aab <- read_xls(tf, sheet = "Date")
 
 aaa <- read_xls('DataInExcelFormat 25g100y +Date.xls', sheet = "NumberOfSips")
 abb <- read_xls('DataInExcelFormat 25g100y +Date.xls', sheet = "Date")
@@ -280,8 +283,13 @@ ggsave(h=2,w=3.5,"25G100Y.png")
 abc2
 ```
 
-## 75g100y
-```{r PLOTTED 10y7.5g v 10g10y}
+### 75g100y
+```{r fig175g100y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+abb <- read_xls(tf, sheet = "Date")
+aab <- read_xls(tf, sheet = "Date")
 
 aaa <- read_xls('DataInExcelFormat 75g100y +Date.xls', sheet = "NumberOfSips")
 abb <- read_xls('DataInExcelFormat 75g100y +Date.xls', sheet = "Date")
@@ -344,8 +352,13 @@ abc2
 
 ```
 
-## 100g50y
-```{r PLOTTED 10g5y v 10g10y}
+### 100g50y
+```{r fig1100g50y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+abb <- read_xls(tf, sheet = "Date")
+aab <- read_xls(tf, sheet = "Date")
 
 aaa <- read_xls('DataInExcelFormat 100g50y +Data.xls', sheet = "NumberOfSips")
 abb <- read_xls('DataInExcelFormat 100g50y +Data.xls', sheet = "Date")
@@ -408,8 +421,13 @@ ggsave(h=2,w=3.5,"100G50Y.png")
 abc2
 ```
 
-## 100g25y
-```{r PLOTTED 10g2.5y v 10g10y}
+### 100g25y
+```{r fig1100g25y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+abb <- read_xls(tf, sheet = "Date")
+aab <- read_xls(tf, sheet = "Date")
 
 aaa <- read_xls('DataInExcelFormat 100g25y +Date.xls', sheet = "NumberOfSips")
 abb <- read_xls('DataInExcelFormat 100g25y +Date.xls', sheet = "Date")
@@ -472,8 +490,13 @@ ggsave(h=2,w=3.5,"100G25Y.png")
 abc2
 ```
 
-## 50g50y
-```{r PLOTTED 5g5y v 10g10y}
+### 50g50y
+```{r fig150g50y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+abb <- read_xls(tf, sheet = "Date")
+aab <- read_xls(tf, sheet = "Date")
 
 aaa <- read_xls('DataInExcelFormat 100g100y vs 50g50y +Date_JMC.xls', sheet = "NumberOfSips")
 abb <- read_xls('DataInExcelFormat 100g100y vs 50g50y +Date_JMC.xls', sheet = "Date")
@@ -538,8 +561,13 @@ abc2
 
 ```
 
-## 50g25y
-```{r 100g100y vs 50g25y}
+### 50g25y
+```{r fig150g25y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+abb <- read_xls(tf, sheet = "Date")
+aab <- read_xls(tf, sheet = "Date")
 
 aaa <- read_xls('DataInExcelFormat 100.100 to 50.25+Date_JMC.xls', sheet = "NumberOfSips")
 abb <- read_xls('DataInExcelFormat 100.100 to 50.25+Date_JMC.xls', sheet = "Date")
@@ -600,8 +628,8 @@ ggsave(h=2,w=3.5,"50G25Y.png")
 abc2
 ```
 
-## Build the plot
-```{r build the plot}
+### Build the plot
+```{r fig1plot, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 pyaxis <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(list(abc2.x))))), yend=mean, col = abc2.x)) + 
   geom_blank() + 
@@ -661,8 +689,13 @@ dev.off()
 ```
 
 
-## 100g50y
-```{r PLOTTED 10g5y v 10g10y}
+### 100g50y
+```{r 100g50y, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
+
+aaa <- read_xls(tf, sheet = "NumberOfSips")
+abb <- read_xls(tf, sheet = "Date")
+aab <- read_xls(tf, sheet = "Date")
 
 aaa <- read_xls('DataInExcelFormat 100g50y +Data.xls', sheet = "NumberOfSips")
 abb <- read_xls('DataInExcelFormat 100g50y +Data.xls', sheet = "Date")
@@ -869,10 +902,10 @@ abc2
 ```
 
 
-# Figure 2
+## Figure 2
 
 ### Getting started
-```{r }
+```{r gettingstarted2, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 rm(list=ls())
 library(readxl)
@@ -889,7 +922,7 @@ setwd('~/Dropbox/Dietary Pref 2019/MGWA')
 ```
 
 ### Figure 2
-```{r Fig 2}
+```{r Fig2, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 ## 7.5g10y v 10g10y
 aaa <- read_xls('DataInExcelFormat.xls', sheet = "NumberOfSips")
 # bbb <- read_xls('DataInExcelFormat.xls', sheet = "SipDurations")
@@ -1059,8 +1092,8 @@ ggsave(h=16,w=7,"MGWA_data.png")
 write.csv(pd3e,"fig2pd3e.csv")
 ```
 
-## Fig S1 QQ plotsa
-```{r mgwa}
+### Fig S1 QQ plotsa
+```{r mgwa, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 parsed_data <- FormatAfterOrtho('groupsWP.txt', format="groups")
 
 pd2 <- read.csv("lookup_code.csv") %>% inner_join(pref_data, by=c("trt")) %>% filter(!is.na(time)) %>% droplevels()
@@ -1117,8 +1150,8 @@ WriteMCL(mcl_matrixC,"lmeR2ind_binomialdata_test.csv")
 ```
 
 
-# Figure 3 - MGWA followup
-```{r }
+## Figure 3 - MGWA followup
+```{r fig3, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000 }
 rm(list=ls())
 library(readxl)
 library(dplyr)
@@ -1265,8 +1298,8 @@ write.csv(abc3, "abc3.txt")
 
 ```
 
-
-```{r other mutatnts}
+### other mutants
+```{r other_mutatnts, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 setwd('~/Dropbox/Dietary Pref 2019/MGWA followup/')
 
@@ -1427,7 +1460,8 @@ length(table(list(pd3$testcol)))
 
 ```
 
-```{MGWA initial}
+### mgwa
+```{r MGWA_initial, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 setwd('~/Dropbox/Dietary Pref 2019/MGWA')
 
@@ -1582,9 +1616,8 @@ ggsave(h=23,w=8,"mgwa.png")
 
 ```
 
-
-
-```{r MGWA analysis}
+### mgwa analysis
+```{r MGWAanalysis, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
  ## read in file
 genomekegg <- read.csv('~/Dropbox/Dietary Pref 2019/MGWA/lmeR2ind_binomialdata_1020_kegg.csv', sep = ",", fill = T, header = T, stringsAsFactors = F)
@@ -1658,7 +1691,8 @@ gsub(pattern = "ko:", replacement = "", x = names(both_KOtoMap[both_KOtoMap=="pa
 
 ```
 
-```{r matching test results}
+### matching test results
+```{r matchingtestresults, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 wilcox <- read.csv('~/Dropbox/Dietary Pref 2019/MGWA/wilcox_binomial_10_20.csv', sep = ",", fill = T, header = T, stringsAsFactors = F) %>% dplyr::select(corrected_pval1, KEGG) %>% filter(KEGG %in% c('K02050','K06997','K20532','K00788','K02483','K07267','K06006','K04487','K04487','K00330','K06137','K00128','K06915')) 
 lmer2ind <- read.csv('~/Dropbox/Dietary Pref 2019/MGWA/lmeR2ind_binomialdata_1020_kegg.csv', sep = ",", fill = T, header = T, stringsAsFactors = F)%>% dplyr::select(corrected_pval1, kegg) %>% filter(kegg %in% c('K02050','K06997','K20532','K00788','K02483','K07267','K06006','K04487','K04487','K00330','K06137','K00128','K06915')) 
@@ -1686,7 +1720,8 @@ K00788" "K07090" "K07267" "K06895" "K04487" "K06915" "K11473" "K02016" "K00128" 
 wilcox[1,]
 ```
 
-```{r}
+### fig3s
+```{r fig3s, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 #  look at round 1 of mutants, cmopare not to wild-type but to the ones taht are not different from wild-type in round 1
 
 
@@ -1833,10 +1868,9 @@ ggsave(h=7,w=15,"mutant_validation2-1220.png")
 ```
 
 
-# Figure 4
-
-## get started
-```{r glucose values}
+## Figure 4
+### get started
+```{r glucose_values, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 rm(list=ls())
 library(reshape)
@@ -1909,8 +1943,8 @@ combine_files <- function(filepath1, sheet1, sheet1b, filepath2, sheet2, filepat
 
 ```
 
-## diet plus flies
-```{r}
+### diet plus flies
+```{r dpf, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 setwd('~/Dropbox/Dietary Pref 2019/MGWA followup/glucose_protein/')
 
 matching_file <- data.frame(plate = c("1","2","3","4","5","6","7","8"), type = c("dietandflies","flies","dietnoflies","flies","dietandflies","dietnoflies","flies","dietandflies"), day =c("4-7","4-7","4-8","4-8","4-8","4-10","4-10","4-10"))
@@ -2031,8 +2065,8 @@ ggsave("normalized_glucose.jpg", width = 4, height = 4)
   
 ```
 
-## flies only
-```{r}
+### flies only
+```{r f, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 flies <- pg_data %>% filter(type == "flies" & treatment != 12) %>% droplevels()
 
@@ -2099,7 +2133,7 @@ ggsave("normalized_glucose_plot_flies.jpg", width = 4, height = 4)
 ```
 
 ### diet no flies
-```{r}
+```{r d, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 dietnoflies <- pg_data %>% filter(type == "dietnoflies" & treatment != 12) %>% droplevels()
 
 plot(dietnoflies$normalized_glucose ~ as.factor(dietnoflies$treatment))
@@ -2173,17 +2207,8 @@ ggsave("normalized_glucose_plot_noflies.jpg", width = 4, height = 4)
 
 
 
-
-```{r}
-write.csv(pg_data, "pg_data.csv")
-```
-
-
-
-
-# Figure S3
-
-```{r}
+## Figure S3
+```{r figs3, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
   ## get traits
 setwd('~/Dropbox/Dietary Pref 2019/')
