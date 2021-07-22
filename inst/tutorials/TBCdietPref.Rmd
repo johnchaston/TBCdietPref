@@ -4,7 +4,7 @@ output: learnr::tutorial
 runtime: shiny_prerendered
 ---
 
-
+## Setup
 ```{r setup, include = F}
 rm(list=ls())
 
@@ -18,22 +18,9 @@ library(multcomp)
 library(ggplot2)
 library(cowplot)
 library(MAGNAMWAR)
-library(KEGGREST)
 library(tidyr)
 library(dunn.test)
 library(rcompanion)
-
-
-library(gridExtra)
-library(reshape)
-
-
-
-# GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
-# 
-# aaa <- read_xls(tf, sheet = "NumberOfSips")
-# abb <- read_xls(tf, sheet = "Date")
-# aab <- read_xls(tf, sheet = "Date")
 
  ## function to combine data from multiple files for glucose and protein analysis
 combine_files <- function(filepath1, sheet1, sheet1b, filepath2, sheet2, filepath3, sheet3) {
@@ -90,9 +77,6 @@ combine_files <- function(filepath1, sheet1, sheet1b, filepath2, sheet2, filepat
   final_samples <- glucose_samples %>% inner_join(protein_samples, by = "name")
   
 }
-
-
-
 ```
 
 ## Figure 1
@@ -729,6 +713,8 @@ pref_data <- out_df %>%
 	filter(!trt%in%c("axenic_axenic","67_67","25_25","48_48","32_32")) %>% 
 	droplevels()
 
+#write.csv(pref_data, "pref_data.csv")
+
 pd2 <- read.csv(url("https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/lookup_code.csv")) %>% inner_join(pref_data, by=c("trt")) %>% filter(!is.na(time)) %>% droplevels()
 
 pd2$day2 <- as.factor(as.character(pd2$day))
@@ -857,11 +843,9 @@ colors2 <- rev(c(rep("red",11),rep("orange",4),rep("green",2),rep("blue", 7),rep
 
 ```
 
-### Fig S1 QQ plotsa DOES NOT RUN
-```{r mgwa, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
-parsed_data <- FormatAfterOrtho(url('https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/groups2020.txt'), format="groups")
-
-pd2 <- read.csv(url("https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/lookup_code.csv")) %>% inner_join(pref_data, by=c("trt")) %>% filter(!is.na(time)) %>% droplevels()
+## MGWA, including Fig S2 QQs
+```{r MGWA, exercise=T, warning = F, message = F, eval = F,  exercise.timelimit = 1000000}
+pd2 <- read.csv(url("https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/lookup_code_mgwa2.csv")) %>% inner_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/pref_data.csv")), by=c("trt")) %>% filter(!is.na(time)) %>% droplevels()
 
 pd2$day2 <- as.factor(as.character(pd2$day))
 pd2$time2 <- as.factor(as.character(pd2$time))
@@ -870,35 +854,37 @@ pd2$td <- paste0(pd2$time,pd2$day)
 
 efg <- read.csv(url('https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/fig2-efg.csv'))
 
-pd3 <- cbind(pd2, efg) %>% mutate(testcol = paste0(trt, X2,code))
-pd3[1,]
-#write.csv(pd3, "raw_for_MGWA.csv")
+pd3 <- cbind(pd2, efg %>% dplyr::select(-X)) %>% mutate(testcol = paste0(trt, X2,code))
+
+parsed_data <- FormatAfterOrtho(url('https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/groups2020.txt'), format="groups")
 
 # write out using cbind data
 mcl_matrixB <- AnalyzeOrthoMCL(mcl_data = parsed_data, 
 						pheno_data = pd3,
 						 model = 'wx',
-						 species_name = 'code',
+						 species_name = 'mgwa2',
 						 resp = 'X1',
 						 princ_coord = 0.5)
-
 QQPlotter(mcl_matrixB)
-#joined_matrixB <- JoinRepSeq(parsed_data, 'precompliantfasta2/', mcl_matrixB, fastaformat = 'old')
-#WriteMCL(joined_matrixB,"wilcox_binomialdata.csv")
+## doesn't run to avoid specifying each individual folder path, but can download from github files folder and program the folder locally.
+#joined_matrixB <- JoinRepSeq(parsed_data, 'mgwa2/precompliantFasta3/', mcl_matrixB, fastaformat = 'old')
+#setwd('../..')
+# WriteMCL(joined_matrixB,"wilcox_binomial_10_20.csv")
 
 mcl_matrixC <- AnalyzeOrthoMCL(mcl_data = parsed_data, 
 						pheno_data = pd3,
 						 model = 'lmeR2ind',
-						 species_name = 'code',
+						 species_name = 'mgwa2',
 						 resp = 'X1',
 						 rndm1='day',
 						 rndm2='time',
 						 princ_coord = 0.5)
 QQPlotter(mcl_matrixC)
-#joined_matrixC <- JoinRepSeq(parsed_data, 'precompliantfasta2/', mcl_matrixC, fastaformat = 'old')
-#WriteMCL(joined_matrixC,"lmeR2ind_binomialdata.csv")
+## doesn't run to avoid specifying each individual folder path, but can download from github files folder and program the folder locally.
+#joined_matrixC <- JoinRepSeq(parsed_data, 'mgwa2/precompliantfasta3/', mcl_matrixC, fastaformat = 'old')
+#setwd('../..')
+#WriteMCL(joined_matrixC,"lmeR2ind_binomialdata_1020.csv")
 ```
-
 
 ## Figure 3 - MGWA followup
 ```{r fig3, exercise=T, warning = F, message = F, eval = F, fig.width = 5, exercise.timelimit = 10000 }
