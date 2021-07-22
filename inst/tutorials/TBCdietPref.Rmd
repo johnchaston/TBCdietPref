@@ -4,7 +4,6 @@ output: learnr::tutorial
 runtime: shiny_prerendered
 ---
 
-## Setup
 ```{r setup, include = F}
 rm(list=ls())
 
@@ -843,7 +842,7 @@ colors2 <- rev(c(rep("red",11),rep("orange",4),rep("green",2),rep("blue", 7),rep
 
 ```
 
-## MGWA, including Fig S2 QQs
+### MGWA, including Fig S2 QQs
 ```{r MGWA, exercise=T, warning = F, message = F, eval = F,  exercise.timelimit = 1000000}
 pd2 <- read.csv(url("https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/lookup_code_mgwa2.csv")) %>% inner_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/pref_data.csv")), by=c("trt")) %>% filter(!is.na(time)) %>% droplevels()
 
@@ -886,7 +885,7 @@ QQPlotter(mcl_matrixC)
 #WriteMCL(joined_matrixC,"lmeR2ind_binomialdata_1020.csv")
 ```
 
-## Figure 3 - MGWA followup
+## Figure 3
 ```{r fig3, exercise=T, warning = F, message = F, eval = F, fig.width = 5, exercise.timelimit = 10000 }
 
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat-all%20together%20with%20dayandtime.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
@@ -1199,9 +1198,8 @@ ggplot(df2, aes(x=treatment, y = mnglu)) +
 ```
 
 
-
 ## Figure S3
-- code below does not execute because cannot post Walters 2020 data to GitHub; but if user reads it in, subsequent code will work
+code below does not execute because cannot post Walters 2020 data to GitHub; but if user reads it in after downloading from Molecular Ecology (file name and sheet are shown in code), subsequent code will work
 ```{r figs3, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 ## read in your file here
