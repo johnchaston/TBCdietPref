@@ -753,7 +753,7 @@ dev.off()
 ## Figure S2A total sips ok {.tabset}
 
 ### plot 100g100y
-```{r fig1100g100y, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+```{r fig1100g100y2, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 
 GET("http://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100.100%20vs%20100.00%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
@@ -815,7 +815,7 @@ p100g100y
 ```
 
 ### plot 75y100g
-```{r fig175y100g, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+```{r fig175y100g2, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g75y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
@@ -880,7 +880,7 @@ p75y100g
 ```
 
 ### 50g100y
-```{r fig150g100y, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+```{r fig150g100y2, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%2050g100y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
@@ -948,7 +948,7 @@ p50g100y
 ```
 
 ### 25g100y
-```{r fig125g100y, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+```{r fig125g100y2, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%2025g100y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
@@ -1017,7 +1017,7 @@ p25g100y
 ```
 
 ### 75g100y
-```{r fig175g100y, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+```{r fig175g100y2, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%2075g100y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
@@ -1084,7 +1084,7 @@ p100y75g
 ```
 
 ### 100g50y
-```{r fig1100g50y, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+```{r fig1100g50y2, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g50y%20+Data.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
@@ -1150,7 +1150,7 @@ p100g50y
 ```
 
 ### 100g25y
-```{r fig1100g25y, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+```{r fig1100g25y2, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g25y%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
@@ -1214,7 +1214,7 @@ p100g25y
 ```
 
 ### 50g50y
-```{r fig150g50y, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+```{r fig150g50y2, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100g100y%20vs%2050g50y%20+Date_JMC.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
@@ -1275,7 +1275,7 @@ p50g50y
 ```
 
 ### 50g25y
-```{r fig150g25y, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+```{r fig150g25y2, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100.100%20to%2050.25+Date_JMC.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
 aaa <- read_xls(tf, sheet = "NumberOfSips")
@@ -1338,7 +1338,7 @@ p50g25y
 ```
 
 ### Build the plot
-```{r fig1plot, exercise=F, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+```{r fig1plot2, exercise=F, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 pyaxis <- ggplot(pd3e, aes(x = abc2.x, xend=abc2.x, y=c(rep(0.5,length(table(list(abc2.x))))), yend=mean, col = abc2.x)) + 
   geom_blank() + 
@@ -1410,7 +1410,7 @@ sd_75y100g
 
 ### 50g100y
 sd_50g100y <- calc_feeding_time_stats("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%2050g100y%20+Date.xls?raw=true")
-sd_50g1007
+sd_50g100y
 
 ### 25g100y
 sd_25g100y <- calc_feeding_time_stats("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%2025g100y%20+Date.xls?raw=true")
@@ -1438,7 +1438,7 @@ sd_50g25y
 ```
 
 ### Build the plot
-```{r fig1plot, exercise=F, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+```{r fig1plot3, exercise=F, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
 GET("http://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat%20100.100%20vs%20100.00%20+Date.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
@@ -2084,7 +2084,7 @@ x=.6
 ```
 
 ### Figure S5A feeding totals
-```{r fig3, exercise=T, warning = F, message = F, eval = T, fig.width = 5, exercise.timelimit = 10000 }
+```{r figs5a, exercise=T, warning = F, message = F, eval = T, fig.width = 5, exercise.timelimit = 10000 }
 
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat-all%20together%20with%20dayandtime.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
@@ -2160,7 +2160,7 @@ x=.6
 ```
 
 ## Figure S5B sip duration
-```{r}
+```{r figs5b, exercise=T, warning = F, message = F, eval = T, fig.width = 5, exercise.timelimit = 10000}
 
 GET("https://github.com/johnchaston/TBCdietPref/blob/master/files/DataInExcelFormat-all%20together%20with%20dayandtime.xls?raw=true", write_disk(tf <- tempfile(fileext = ".xls")))
 
@@ -2292,7 +2292,7 @@ pg_data <- pg_data %>%
   droplevels()
 
 
-write.csv(pg_data, 'pg_data.csv')
+#write.csv(pg_data, 'pg_data.csv')
 ## 
 # diet and flies
 ## 
@@ -2484,8 +2484,8 @@ ggplot(df2, aes(x=treatment, y = mnglu)) +
 ## Figure S3
 ```{r figs3, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 
-## read in your file here
-traits <- read_xlsx('../mec15344-sup-0002-DatasetsS1-S14.xlsx', sheet = "Dataset S7", skip = 2, na = "NA")
+## read in your file here, need to change the filepath
+traits <- read_xlsx('~/Dropbox/mec15344-sup-0002-DatasetsS1-S14.xlsx', sheet = "Dataset S7", skip = 2, na = "NA")
   ## get pref data
 pd3e <- read.csv(url('https://raw.githubusercontent.com/johnchaston/TBCdietPref/master/files/fig2-pd3e.csv'))
 
