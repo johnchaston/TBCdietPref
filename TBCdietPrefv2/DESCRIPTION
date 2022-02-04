@@ -1,13 +1,13 @@
 Package: TBCdietPref
-Title: What the Package Does (One Line, Title Case)
+Title: Code for Call et al dietary preferences work
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "John",
+           family = "Chaston",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
+           email = "john_chaston@byu.edu",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Description: Runs the code from the paper
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
