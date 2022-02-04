@@ -7,7 +7,7 @@ runtime: shiny_prerendered
 ```{r setup, include = F, warning = F, message = F}
 rm(list=ls())
 
-#library(learnr)
+library(learnr)
 library(readxl)
 library(dplyr)
 library(RCurl)
