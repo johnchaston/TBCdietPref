@@ -7,7 +7,7 @@ runtime: shiny_prerendered
 ```{r setup, include = F, warning = F, message = F}
 # usethis::create_package('Dietary Pref 2019/TBCdietPref/TBCdietPrefv2')
 # usethis::use_tutorial("TBCdietPrefv2", "TBCdietPrefv2 Walkthrough", open = interactive())
-
+# devtools::install()
 rm(list=ls())
 
 library(learnr)
